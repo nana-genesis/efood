@@ -2,6 +2,10 @@ import { Routes, Route, Link } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
 import Home from './pages/Home'
 import Menu from './pages/Menu'
+import Restaurant from './pages/Restaurant'
+import Cart from './pages/Cart'
+import Header from './components/Header'
+import { CartProvider } from './context/CartContext'
 
 const GlobalStyle = createGlobalStyle`
   body { margin: 0; font-family: Inter, system-ui, Arial, sans-serif; }
@@ -33,21 +37,20 @@ function App() {
     <>
       <GlobalStyle />
       <Layout>
-        <Header>
-          <h1>efood</h1>
-          <nav>
-            <Link to="/">Home</Link> | <Link to="/menu">Menu</Link>
-          </nav>
-        </Header>
+        <CartProvider>
+          <Header />
 
-        <Container>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
-          </Routes>
-        </Container>
+          <Container>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/restaurant/:id" element={<Restaurant />} />
+              <Route path="/cart" element={<Cart />} />
+            </Routes>
+          </Container>
 
-        <footer style={{ padding: 16, textAlign: 'center' }}>© efood</footer>
+          <footer style={{ padding: 16, textAlign: 'center' }}>© efood</footer>
+        </CartProvider>
       </Layout>
     </>
   )
