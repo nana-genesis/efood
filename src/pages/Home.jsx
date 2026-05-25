@@ -12,18 +12,25 @@ const Hero = styled.section`
   gap: 32px;
   align-items: center;
   padding: 40px 0;
+  @media(max-width: 860px){
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
 `
 
 const Left = styled.div``
 
 const Title = styled.h2`
-  font-size: 36px;
+  font-size: 40px;
   margin: 0 0 12px 0;
+  color: #111;
+  line-height: 1.05;
 `
 
 const Subtitle = styled.p`
   margin: 0 0 20px 0;
-  color: #444;
+  color: var(--muted);
+  font-size: 16px;
 `
 
 const Search = styled.div`
@@ -35,19 +42,21 @@ const Search = styled.div`
 const Input = styled.input`
   flex: 1;
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  border: 1px solid #eee;
   font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 `
 
 const CTA = styled.button`
-  background: #ff5a5f;
+  background: var(--primary);
   color: white;
   border: none;
   padding: 12px 18px;
-  border-radius: 10px;
+  border-radius: 999px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(255,90,95,0.18);
 `
 
 const Right = styled.div`
@@ -57,8 +66,13 @@ const Right = styled.div`
 
 const HeroImage = styled.img`
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  @media(max-width:860px){
+    max-width: 320px;
+    margin: 0 auto;
+  }
 `
 
 const Grid = styled.div`
@@ -88,7 +102,7 @@ export default function Home() {
             <CTA>Pesquisar</CTA>
           </Search>
 
-          <CTA style={{ background: '#00b894' }}>Ver restaurantes</CTA>
+              <CTA style={{ background: 'var(--accent)' }}>Ver restaurantes</CTA>
         </Left>
 
         <Right>

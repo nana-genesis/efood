@@ -3,18 +3,40 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 const Bar = styled.header`
-  background: #ff5a5f;
+  background: var(--primary);
   color: white;
-  padding: 16px 24px;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `
 
+const Brand = styled(Link)`
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+`
+
 const Right = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
+`
+
+const CartLink = styled(Link)`
+  color: white;
+  position: relative;
+`
+
+const Badge = styled.span`
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: #222;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
 `
 
 export default function Header() {
@@ -23,10 +45,10 @@ export default function Header() {
 
   return (
     <Bar>
-      <Link to="/" style={{ color: 'white', fontWeight: 700 }}>efood</Link>
+      <Brand to="/">efood</Brand>
       <Right>
         <Link to="/menu" style={{ color: 'white' }}>Menu</Link>
-        <Link to="/cart" style={{ color: 'white' }}>Carrinho ({count})</Link>
+        <CartLink to="/cart">Carrinho {count > 0 && <Badge>{count}</Badge>}</CartLink>
       </Right>
     </Bar>
   )
