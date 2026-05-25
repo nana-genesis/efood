@@ -8,8 +8,18 @@ import Header from './components/Header'
 import { CartProvider } from './context/CartContext'
 
 const GlobalStyle = createGlobalStyle`
-  body { margin: 0; font-family: Inter, system-ui, Arial, sans-serif; }
+  :root{
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --primary: #ff5a5f;
+    --accent: #00b894;
+    --muted: #666666;
+    --max-width: 1100px;
+  }
+  *{box-sizing: border-box}
+  body { margin: 0; font-family: 'Inter', system-ui, Arial, sans-serif; background: var(--bg); color: #222 }
   a { text-decoration: none; color: inherit; }
+  main{ max-width: var(--max-width); margin: 0 auto; }
 `
 
 const Layout = styled.div`
@@ -18,15 +28,7 @@ const Layout = styled.div`
   min-height: 100vh;
 `
 
-const Header = styled.header`
-  background: #ff5a5f;
-  color: white;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
+// Header component is provided in src/components/Header.jsx
 const Container = styled.main`
   flex: 1;
   padding: 24px;
