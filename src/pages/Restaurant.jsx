@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
-import { useDispatchCart } from '../context/CartContext'
 import { formatCurrency, getRestaurants } from '../services/efoodApi'
+import { addItem } from '../store/cartSlice'
 
 const Layout = styled.div`
   display: grid;
@@ -248,7 +249,7 @@ const Message = styled.p`
 
 export default function Restaurant() {
   const { id } = useParams()
-  const dispatch = useDispatchCart()
+  const dispatch = useDispatch()
   const [restaurant, setRestaurant] = useState(null)
   const [selectedDish, setSelectedDish] = useState(null)
   const [status, setStatus] = useState('loading')
@@ -280,15 +281,14 @@ export default function Restaurant() {
   }, [selectedDish])
 
   function addToCart(dish) {
-    dispatch({
-      type: 'add',
-      item: {
+    dispatch(
+      addItem({
         id: dish.id,
         name: dish.nome,
         price: dish.preco,
         image: dish.foto,
-      },
-    })
+      }),
+    )
     setSelectedDish(null)
   }
 

@@ -1,6 +1,15 @@
 import styled from 'styled-components'
-import { useCart, useDispatchCart } from '../context/CartContext'
+import { useDispatch, useSelector } from 'react-redux'
 import { formatCurrency } from '../services/efoodApi'
+import {
+  addItem,
+  clearCart,
+  decrementItem,
+  removeItem,
+  selectCartCount,
+  selectCartItems,
+  selectCartTotal,
+} from '../store/cartSlice'
 
 const Shell = styled.div`
   display: grid;
@@ -132,11 +141,10 @@ const Empty = styled.div`
 `
 
 export default function Cart() {
-  const cart = useCart() || []
-  const dispatch = useDispatchCart()
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0)
-  const count = cart.reduce((sum, item) => sum + item.qty, 0)
+  const cart = useSelector(selectCartItems)
+  const count = useSelector(selectCartCount)
+  const total = useSelector(selectCartTotal)
+  const dispatch = useDispatch()
 
   if (cart.length === 0) {
     return (
@@ -164,9 +172,9 @@ export default function Cart() {
                 <p>{formatCurrency(item.price)} x {item.qty}</p>
               </ItemInfo>
               <Controls>
-                <IconButton onClick={() => dispatch({ type: 'decrement', id: item.id })}>-</IconButton>
-                <IconButton onClick={() => dispatch({ type: 'add', item })}>+</IconButton>
-                <IconButton onClick={() => dispatch({ type: 'remove', id: item.id })}>Remover</IconButton>
+                <IconButton onClick={() => dispatch(decrementItem(item.id))}>-</IconButton>
+                <IconButton onClick={() => dispatch(addItem(item))}>+</IconButton>
+                <IconButton onClick={() => dispatch(removeItem(item.id))}>Remover</IconButton>
               </Controls>
             </ItemRow>
           ))}
@@ -176,7 +184,7 @@ export default function Cart() {
           <h2>Resumo</h2>
           <p>Total do pedido</p>
           <Total>{formatCurrency(total)}</Total>
-          <CTA onClick={() => dispatch({ type: 'clear' })}>Finalizar pedido</CTA>
+          <CTA onClick={() => dispatch(clearCart())}>Finalizar pedido</CTA>
         </Summary>
       </Shell>
     </>

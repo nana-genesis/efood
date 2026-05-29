@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { useSelector } from 'react-redux'
+import { selectCartCount } from '../store/cartSlice'
 
 const Bar = styled.header`
   position: sticky;
@@ -69,8 +70,7 @@ const Badge = styled.span`
 `
 
 export default function Header() {
-  const cart = useCart() || []
-  const count = cart.reduce((s, i) => s + i.qty, 0)
+  const count = useSelector(selectCartCount)
 
   return (
     <Bar>

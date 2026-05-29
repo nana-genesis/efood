@@ -5,7 +5,6 @@ import Menu from './pages/Menu'
 import Restaurant from './pages/Restaurant'
 import Cart from './pages/Cart'
 import Header from './components/Header'
-import { CartProvider } from './context/CartContext'
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -104,20 +103,18 @@ function App() {
     <>
       <GlobalStyle />
       <Layout>
-        <CartProvider>
-          <Header />
+        <Header />
 
-          <Container>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/restaurant/:id" element={<Restaurant />} />
-              <Route path="/cart" element={<Cart />} />
-            </Routes>
-          </Container>
+        <Container>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/restaurant/:id" element={<Restaurant />} />
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
+        </Container>
 
-          <Footer>© efood cyber delivery</Footer>
-        </CartProvider>
+        <Footer>© efood cyber delivery</Footer>
       </Layout>
     </>
   )
