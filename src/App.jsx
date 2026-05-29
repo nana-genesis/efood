@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import styled, { createGlobalStyle } from 'styled-components'
 import Home from './pages/Home'
 import Menu from './pages/Menu'
@@ -9,17 +9,19 @@ import { CartProvider } from './context/CartContext'
 
 const GlobalStyle = createGlobalStyle`
   :root{
-    --bg: #0a0612;
-    --surface: rgba(18, 11, 31, 0.92);
-    --card: rgba(20, 12, 35, 0.85);
-    --primary: #ff3366;
-    --primary-light: #ff4d7a;
-    --accent: #00d4ff;
-    --accent-light: #33e0ff;
-    --muted: #a8a4c0;
-    --text: #e8e4f3;
-    --text-h: #ffffff;
-    --border: rgba(255, 51, 102, 0.12);
+    --bg: #090710;
+    --surface: rgba(18, 14, 31, 0.92);
+    --panel: rgba(24, 17, 38, 0.82);
+    --card: rgba(25, 20, 42, 0.78);
+    --primary: #ff2f72;
+    --primary-strong: #ff005c;
+    --accent: #00e5ff;
+    --lime: #bcff2f;
+    --muted: #b7b1cc;
+    --text: #f6f2ff;
+    --ink: #090710;
+    --border: rgba(255, 255, 255, 0.12);
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
     --max-width: 1100px;
   }
   *{
@@ -27,25 +29,49 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     margin: 0;
+    min-width: 320px;
     min-height: 100vh;
     color: var(--text);
-    font-family: 'Inter', system-ui, Arial, sans-serif;
-    background: linear-gradient(135deg, #0a0612 0%, #1a0f2e 50%, #0f1a2e 100%);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+      linear-gradient(135deg, rgba(255, 47, 114, 0.18), transparent 26%),
+      linear-gradient(230deg, rgba(0, 229, 255, 0.14), transparent 28%),
+      radial-gradient(circle at 50% 0%, rgba(188, 255, 47, 0.08), transparent 24%),
+      var(--bg);
     background-attachment: fixed;
-    line-height: 1.6;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 78%);
+  }
+  button, input {
+    font: inherit;
+  }
+  button {
+    border: 0;
   }
   a {
     text-decoration: none;
     color: inherit;
   }
-  main {
+  h1, h2, h3, h4, p {
+    margin-top: 0;
+  }
+  img {
+    max-width: 100%;
+    display: block;
+  }
+  main{
     max-width: var(--max-width);
     margin: 0 auto;
     width: 100%;
-  }
-  h1, h2, h3, h4 {
-    color: var(--text-h);
-    font-weight: 700;
   }
 `
 
@@ -54,18 +80,23 @@ const Layout = styled.div`
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  background: radial-gradient(circle at top center, rgba(255, 89, 163, 0.12), transparent 24%),
-    radial-gradient(circle at right center, rgba(70, 240, 255, 0.08), transparent 25%);
 `
 
-// Header component is provided in src/components/Header.jsx
 const Container = styled.main`
   flex: 1;
-  padding: 28px;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 30px;
-  background: rgba(12, 6, 26, 0.92);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45);
+  padding: 28px 20px 56px;
+
+  @media (max-width: 700px) {
+    padding-inline: 14px;
+  }
+`
+
+const Footer = styled.footer`
+  color: var(--muted);
+  padding: 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: rgba(9, 7, 16, 0.72);
 `
 
 function App() {
@@ -85,7 +116,7 @@ function App() {
             </Routes>
           </Container>
 
-          <footer style={{ padding: 18, textAlign: 'center', color: 'rgba(255,255,255,0.75)', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 24 }}>© efood</footer>
+          <Footer>© efood cyber delivery</Footer>
         </CartProvider>
       </Layout>
     </>

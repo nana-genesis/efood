@@ -1,251 +1,269 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import heroImg from '../assets/hero.png'
-import restaurants from '../data/restaurants'
+import { getRestaurants } from '../services/efoodApi'
 
 const Wrapper = styled.div`
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+  display: grid;
+  gap: 36px;
 `
 
 const Hero = styled.section`
+  min-height: 430px;
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 48px;
-  align-items: center;
-  padding: 60px 0 80px;
-  
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 28px;
+  align-items: end;
+  padding: 46px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(9, 7, 16, 0.94), rgba(9, 7, 16, 0.46)),
+    url(${({ $image }) => $image});
+  background-position: center;
+  background-size: cover;
+  box-shadow: var(--shadow);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--lime));
+  }
+
   @media (max-width: 860px) {
     grid-template-columns: 1fr;
-    text-align: center;
-    padding: 40px 0 60px;
+    padding: 32px 22px;
   }
 `
 
-const Left = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+const HeroContent = styled.div`
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
 `
 
-const Title = styled.h2`
-  font-size: 48px;
-  margin: 0;
-  color: var(--text-h);
-  line-height: 1.1;
-  background: linear-gradient(90deg, var(--text-h), var(--accent-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+const Kicker = styled.span`
+  display: inline-flex;
+  margin-bottom: 14px;
+  color: var(--lime);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+`
+
+const Title = styled.h1`
+  max-width: 760px;
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: clamp(38px, 7vw, 76px);
+  line-height: 0.96;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-shadow: 4px 4px 0 rgba(255, 47, 114, 0.42);
 `
 
 const Subtitle = styled.p`
-  margin: 0;
-  color: var(--text-muted);
+  max-width: 620px;
+  margin: 0 0 24px;
+  color: var(--muted);
   font-size: 18px;
-  line-height: 1.5;
 `
 
-const SearchBox = styled.form`
+const Search = styled.form`
   display: flex;
-  gap: 12px;
-  background: rgba(20, 12, 35, 0.6);
-  padding: 16px;
-  border-radius: 20px;
-  border: 2px solid var(--border);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  
-  &:focus-within {
-    border-color: rgba(255, 51, 102, 0.35);
-    box-shadow: 0 0 30px rgba(255, 51, 102, 0.15);
+  gap: 10px;
+  max-width: 620px;
+
+  @media(max-width: 600px) {
+    flex-direction: column;
   }
 `
 
 const Input = styled.input`
   flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-size: 16px;
+  min-width: 0;
+  color: #fff;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 229, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
   outline: none;
-  
-  &::placeholder {
-    color: var(--text-muted);
+
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.12);
   }
 `
 
-const SearchButton = styled.button`
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 16px;
-  box-shadow: 0 8px 20px rgba(255, 51, 102, 0.3);
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(255, 51, 102, 0.4);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-`
-
-const CTAButton = styled.button`
-  align-self: flex-start;
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  color: var(--bg-dark);
-  border: none;
-  padding: 14px 28px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 16px;
-  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(0, 212, 255, 0.4);
-  }
-  
-  @media (max-width: 860px) {
-    align-self: center;
-  }
-`
-
-const Right = styled.div`
-  display: flex;
+const CTA = styled(Link)`
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--lime));
 `
 
-const HeroImage = styled.img`
-  width: 100%;
-  max-width: 380px;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  border: 2px solid rgba(0, 212, 255, 0.15);
-  
-  @media (max-width: 860px) {
-    max-width: 300px;
+const SectionTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
   }
-`
 
-const RestaurantsSection = styled.div`
-  margin-top: 80px;
-  padding-bottom: 60px;
-`
-
-const SectionTitle = styled.h3`
-  font-size: 28px;
-  margin: 0 0 32px 0;
-  color: var(--text-h);
+  a {
+    color: var(--accent);
+    font-weight: 800;
+  }
 `
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
 `
 
-const Card = styled.div`
-  background: linear-gradient(135deg, rgba(20, 12, 35, 0.9), rgba(20, 12, 35, 0.5));
-  border-radius: 20px;
-  padding: 24px;
+const Card = styled(Link)`
+  min-height: 250px;
+  display: flex;
+  align-items: end;
+  padding: 16px;
   border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background:
+    linear-gradient(to top, rgba(9, 7, 16, 0.94), rgba(9, 7, 16, 0.12)),
+    url(${({ $image }) => $image});
+  background-position: center;
+  background-size: cover;
+
   &:hover {
-    transform: translateY(-8px);
-    border-color: rgba(255, 51, 102, 0.25);
-    box-shadow: 0 12px 40px rgba(255, 51, 102, 0.15);
+    transform: translateY(-3px);
+    border-color: rgba(0, 229, 255, 0.52);
+    box-shadow: 0 0 28px rgba(0, 229, 255, 0.18);
   }
 `
 
-const RestaurantName = styled.h4`
-  font-size: 18px;
-  margin: 0 0 8px 0;
-  color: var(--text-h);
+const CardInfo = styled.div`
+  width: 100%;
+
+  h3 {
+    margin: 0 0 8px;
+    color: #fff;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
 `
 
-const RestaurantInfo = styled.p`
-  color: var(--text-muted);
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
+const Tags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+`
+
+const Tag = styled.span`
+  color: ${({ $dark }) => ($dark ? 'var(--ink)' : '#fff')};
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: ${({ $dark }) => ($dark ? 'var(--lime)' : 'rgba(255, 47, 114, 0.86)')};
+`
+
+const Message = styled.p`
+  color: var(--muted);
 `
 
 export default function Home() {
-  const [search, setSearch] = useState('')
-  const navigate = useNavigate()
+  const [restaurants, setRestaurants] = useState([])
+  const [query, setQuery] = useState('')
+  const [status, setStatus] = useState('loading')
 
-  const filteredRestaurants = restaurants.filter(r =>
-    r.name.toLowerCase().includes(search.toLowerCase()) ||
-    r.category.toLowerCase().includes(search.toLowerCase())
-  )
+  useEffect(() => {
+    getRestaurants()
+      .then((data) => {
+        setRestaurants(data)
+        setStatus('success')
+      })
+      .catch(() => setStatus('error'))
+  }, [])
 
-  const handleSearch = (e) => {
-    e.preventDefault()
-  }
+  const filteredRestaurants = useMemo(() => {
+    const search = query.trim().toLowerCase()
+
+    if (!search) return restaurants
+
+    return restaurants.filter((restaurant) => {
+      return `${restaurant.titulo} ${restaurant.tipo} ${restaurant.descricao}`.toLowerCase().includes(search)
+    })
+  }, [query, restaurants])
+
+  const heroRestaurant = restaurants.find((restaurant) => restaurant.destacado) || restaurants[0]
+  const highlighted = filteredRestaurants.slice(0, 6)
 
   return (
     <Wrapper>
-      <Hero>
-        <Left>
-          <Title>Peça comida rápida e gostosa</Title>
-          <Subtitle>Encontre os melhores restaurantes perto de você e receba em casa.</Subtitle>
+      <Hero $image={heroRestaurant?.capa}>
+        <HeroContent>
+          <Kicker>Delivery em modo neon</Kicker>
+          <Title>efood</Title>
+          <Subtitle>
+            Restaurantes selecionados, pratos reais da API EBAC e uma compra com poucos cliques.
+          </Subtitle>
 
-          <SearchBox onSubmit={handleSearch}>
+          <Search onSubmit={(event) => event.preventDefault()}>
             <Input
-              type="text"
-              placeholder="Busque restaurantes ou comidas..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Busque por restaurante, cozinha ou prato"
             />
-            <SearchButton type="submit">Pesquisar</SearchButton>
-          </SearchBox>
-
-          <CTAButton onClick={() => navigate('/menu')}>
-            Ver todos os restaurantes
-          </CTAButton>
-        </Left>
-
-        <Right>
-          <HeroImage src={heroImg} alt="Entrega de comida" />
-        </Right>
+            <CTA to="/menu">Ver restaurantes</CTA>
+          </Search>
+        </HeroContent>
       </Hero>
 
-      <RestaurantsSection>
+      <section>
         <SectionTitle>
-          {search ? `Resultados para "${search}"` : 'Restaurantes populares'}
+          <h2>Restaurantes em destaque</h2>
+          <Link to="/menu">Abrir cardapios</Link>
         </SectionTitle>
+
+        {status === 'loading' && <Message>Carregando restaurantes...</Message>}
+        {status === 'error' && <Message>Nao foi possivel carregar os restaurantes agora.</Message>}
+
         <Grid>
-          {filteredRestaurants.length > 0 ? (
-            filteredRestaurants.map((r) => (
-              <Card key={r.id} onClick={() => navigate(`/restaurant/${r.id}`)}>
-                <RestaurantName>{r.name}</RestaurantName>
-                <RestaurantInfo>{r.category} • ⭐ {r.rating}</RestaurantInfo>
-              </Card>
-            ))
-          ) : (
-            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-muted)' }}>
-              Nenhum restaurante encontrado
-            </p>
-          )}
+          {highlighted.map((restaurant) => (
+            <Card key={restaurant.id} to={`/restaurant/${restaurant.id}`} $image={restaurant.capa}>
+              <CardInfo>
+                <Tags>
+                  {restaurant.destacado && <Tag $dark>Destaque</Tag>}
+                  <Tag>{restaurant.tipo}</Tag>
+                </Tags>
+                <h3>{restaurant.titulo}</h3>
+                <p>Nota {restaurant.avaliacao} • {restaurant.cardapio.length} pratos</p>
+              </CardInfo>
+            </Card>
+          ))}
         </Grid>
-      </RestaurantsSection>
+      </section>
     </Wrapper>
   )
 }
